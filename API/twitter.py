@@ -1,6 +1,9 @@
-from typing import List
+from typing import Any, Dict, List, Mapping, Union
+from pyparsing import Optional
 import strawberry
 from datetime import datetime
+from strawberry.scalars import JSON
+
 
 @strawberry.type
 class TwitterOverview:
@@ -10,15 +13,31 @@ class TwitterOverview:
     retweetTotal: int 
     sentimentTotal: float 
 
+@strawberry.type
+class TwitterWeekdayAnalytics:
+    asaID_w: Union[str, None]
+    likesCount_w: Union[List[JSON], None]
+    retweetsCount_w: Union[List[JSON], None]
+    sentimentScore_w: Union[List[JSON], None]
+
+@strawberry.type
+class TwitterHourAnalytics:
+    asaID_h: Union[str, None]
+    likesCount_h: Union[List[JSON], None]
+    retweetsCount_h: Union[List[JSON], None]
+    sentimentScore_h: Union[List[JSON], None]
+
+
 
 @strawberry.type
 class TwitterAnalytics:
-    asaID: str 
-    likesCount: List[int]
-    retweetsCount: List[int]
-    sentimentScore: List[float]
-    weekday: List[str]
-    hour: List[int]
+    asaID: Union[str, None]
+    likesCount: Union[List[int], None]
+    retweetsCount: Union[List[int], None]
+    sentimentScore: Union[List[float], None]
+    # weekday: List[str]
+    # hour: List[int]
 
-    
-
+@strawberry.type
+class response(TwitterAnalytics,TwitterWeekdayAnalytics,TwitterHourAnalytics):
+    pass

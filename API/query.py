@@ -3,7 +3,7 @@ from urllib import response
 from fastapi import status, HTTPException
 import strawberry
 from models import Twitter
-from twitter import TwitterOverview, TwitterAnalytics, response
+from twitter import  TwitterAnalytics, TwitterOverview
 from tortoise.functions import Avg, Count, Sum
 
 class AttrDict(dict):
@@ -33,35 +33,29 @@ class Query:
         )
 
     @strawberry.field
-    async def twitterAnalytics(self, asaID:str, startDate:str = '2021-03-01', endDate:str = '2021-03-21', weekday: bool=False, hour: bool=False) -> response:
+    async def twitterAnalytics(self, asaID:str, startDate:str = '2021-03-01', endDate:str = '2021-03-21', weekday: bool=False, hour: bool=False) -> TwitterAnalytics:
         
         if weekday and hour:
 
             raise Exception("Error! Analyze weekday or hour")
 
         if weekday:
+            
             result = await Twitter.\
                 filter(asa_id = asaID).\
                 filter(posted_at__range = [startDate, endDate]).\
                 annotate(likes = Sum("likes"), retweets = Sum('retweets'),
                 sentiment = Sum("sentiment_score")).\
-                group_by("dow").\
-                values("dow", "likes", "retweets", "sentiment")
+                group_by("day_of_week").\
+                values("day_of_week", "likes", "retweets", "sentiment")
             print(result)
 
-            return response(
-                asaID_h=None,
-                likesCount_h=None,
-                retweetsCount_h=None,
-                sentimentScore_h=None,
-                asaID_w = asaID,
-                likesCount_w= result,
-                retweetsCount_w = result,
-                sentimentScore_w = result,
-                asaID = None,
-                likesCount = None,
-                retweetsCount = None,
-                sentimentScore = None
+            return TwitterAnalytics(
+                
+                asaID = asaID,
+                likesCount = result,
+                retweetsCount = result,
+                sentimentScore = result
                 
             
             )
@@ -72,40 +66,25 @@ class Query:
                 filter(posted_at__range = [startDate, endDate]).\
                 annotate(likes = Sum("likes"), retweets = Sum('retweets'),
                 sentiment = Sum("sentiment_score")).\
-                group_by("hour").\
-                values("hour", "likes", "retweets", "sentiment")
-            return response(
-                asaID_h=result,
-                likesCount_h=result,
-                retweetsCount_h=result,
-                sentimentScore_h=result,
-                asaID_w = None,
-                likesCount_w= None,
-                retweetsCount_w = None,
-                sentimentScore_w = None,
-                asaID = None,
-                likesCount = None,
-                retweetsCount = None,
-                sentimentScore = None
+                group_by("day").\
+                values("day", "likes", "retweets", "sentiment")
+            return TwitterAnalytics(
+
+               asaID = asaID,
+                likesCount = result,
+                retweetsCount = result,
+                sentimentScore = result
             )
 
 
         result = await Twitter.filter(asa_id = asaID).filter(posted_at__range = [startDate, endDate]).values()
         result = {key: [i[key] for i in result] for key in result[0]}
         print(result)
-        return response(
-            asaID = asaID,
-            likesCount = result['likes'],
-            retweetsCount = result['retweets'],
-            sentimentScore = result['sentiment_score'],
-            asaID_w = None,
-            likesCount_w= None,
-            retweetsCount_w = None,
-            sentimentScore_w = None,
-            asaID_h=None,
-            likesCount_h=None,
-            retweetsCount_h=None,
-            sentimentScore_h=None,
+        return TwitterAnalytics(
+                asaID = asaID,
+                likesCount = result,
+                retweetsCount = result,
+                sentimentScore = result
             
             
             # hour = result['hour'],

@@ -32,9 +32,8 @@ class TwitterHourAnalytics:
 @strawberry.type
 class TwitterAnalytics:
     asaID: Union[str, None]
-    likesCount: Union[List[JSON], None]
-    retweetsCount: Union[List[JSON], None]
-    sentimentScore: Union[List[JSON], None]
+    results: Union[List[JSON], None]
+    
     # weekday: List[str]
     # hour: List[int]
 

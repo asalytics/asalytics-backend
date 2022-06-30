@@ -46,17 +46,14 @@ class Query:
                 filter(posted_at__range = [startDate, endDate]).\
                 annotate(likes = Sum("likes"), retweets = Sum('retweets'),
                 sentiment = Sum("sentiment_score")).\
-                group_by("day_of_week").\
-                values("day_of_week", "likes", "retweets", "sentiment")
+                group_by("dow").\
+                values("dow", "likes", "retweets", "sentiment")
             print(result)
 
             return TwitterAnalytics(
                 
                 asaID = asaID,
-                likesCount = result,
-                retweetsCount = result,
-                sentimentScore = result
-                
+                results = result
             
             )
 
@@ -66,25 +63,35 @@ class Query:
                 filter(posted_at__range = [startDate, endDate]).\
                 annotate(likes = Sum("likes"), retweets = Sum('retweets'),
                 sentiment = Sum("sentiment_score")).\
-                group_by("day").\
-                values("day", "likes", "retweets", "sentiment")
+                group_by("hour").\
+                values("hour", "likes", "retweets", "sentiment")
             return TwitterAnalytics(
 
                asaID = asaID,
-                likesCount = result,
-                retweetsCount = result,
-                sentimentScore = result
+                results = result
+                
             )
 
 
-        result = await Twitter.filter(asa_id = asaID).filter(posted_at__range = [startDate, endDate]).values()
-        result = {key: [i[key] for i in result] for key in result[0]}
-        print(result)
+        result = await Twitter.filter(asa_id = asaID).filter(posted_at__range = [startDate, endDate]).\
+            annotate(likes=Sum("likes"), retweets=Sum("retweets"), sentiment= Sum("sentiment_score")).\
+            group_by("posted_at").\
+            values("posted_at", "likes", "retweets", "sentiment")
+
+        result_at = [str(i["posted_at"]) for i in result]
+        
+        counter = 0
+        for r in result:
+            r["posted_at"] = result_at[counter]
+            counter+=1 
+
+        # [print(i["posted_at"]) for i in result]
+        # result = {key: [i[key] for i in result] for key in result[0]}
+        # print(result)
         return TwitterAnalytics(
                 asaID = asaID,
-                likesCount = result,
-                retweetsCount = result,
-                sentimentScore = result
+                results = result
+                
             
             
             # hour = result['hour'],

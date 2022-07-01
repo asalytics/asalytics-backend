@@ -31,12 +31,15 @@ class TwitterHourAnalytics:
 
 @strawberry.type
 class TwitterAnalytics:
-    asaID: Union[str, None]
-    results: Union[List[JSON], None]
-    
-    # weekday: List[str]
-    # hour: List[int]
+    # asaID: Union[str, None]
+    posted_at: Union[datetime, None]
+    dow: Union[int, None]
+    hour: Union[int, None]
+    likes: int
+    retweets: int
+    sentiment: float
 
 @strawberry.type
-class response(TwitterAnalytics,TwitterWeekdayAnalytics,TwitterHourAnalytics):
-    pass
+class response:
+    asaID: Union[str, None]
+    results: List[TwitterAnalytics]

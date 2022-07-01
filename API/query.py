@@ -3,8 +3,9 @@ from urllib import response
 from fastapi import status, HTTPException
 import strawberry
 from models import Twitter
-from twitter import  TwitterAnalytics, TwitterOverview
+from twitter import  TwitterAnalytics, TwitterOverview, response
 from tortoise.functions import Avg, Count, Sum
+from dacite import from_dict
 
 class AttrDict(dict):
     def __init__(self, *args, **kwargs):
@@ -33,7 +34,7 @@ class Query:
         )
 
     @strawberry.field
-    async def twitterAnalytics(self, asaID:str, startDate:str = '2021-03-01', endDate:str = '2021-03-21', weekday: bool=False, hour: bool=False) -> TwitterAnalytics:
+    async def twitterAnalytics(self, asaID:str, startDate:str = '2021-03-01', endDate:str = '2021-03-21', weekday: bool=False, hour: bool=False) -> response:
         
         if weekday and hour:
 
@@ -48,14 +49,8 @@ class Query:
                 sentiment = Sum("sentiment_score")).\
                 group_by("dow").\
                 values("dow", "likes", "retweets", "sentiment")
-            print(result)
 
-            return TwitterAnalytics(
-                
-                asaID = asaID,
-                results = result
             
-            )
 
         if hour:
             result = await Twitter.\
@@ -65,33 +60,23 @@ class Query:
                 sentiment = Sum("sentiment_score")).\
                 group_by("hour").\
                 values("hour", "likes", "retweets", "sentiment")
-            return TwitterAnalytics(
-
-               asaID = asaID,
-                results = result
-                
-            )
+            
 
 
-        result = await Twitter.filter(asa_id = asaID).filter(posted_at__range = [startDate, endDate]).\
-            annotate(likes=Sum("likes"), retweets=Sum("retweets"), sentiment= Sum("sentiment_score")).\
-            group_by("posted_at").\
-            values("posted_at", "likes", "retweets", "sentiment")
+        if ((hour == False) & (weekday == False)):
+            result = await Twitter.filter(asa_id = asaID).filter(posted_at__range = [startDate, endDate]).\
+                annotate(likes=Sum("likes"), retweets=Sum("retweets"), sentiment= Sum("sentiment_score")).\
+                group_by("posted_at").\
+                values("posted_at", "likes", "retweets", "sentiment")
 
-        result_at = [str(i["posted_at"]) for i in result]
-        
-        counter = 0
-        for r in result:
-            r["posted_at"] = result_at[counter]
-            counter+=1 
-
-        # [print(i["posted_at"]) for i in result]
         # result = {key: [i[key] for i in result] for key in result[0]}
-        # print(result)
-        return TwitterAnalytics(
+
+        result = [from_dict(data_class=TwitterAnalytics, data=x) for x in result]
+        print(result)
+        
+        return response(
                 asaID = asaID,
                 results = result
-                
             
             
             # hour = result['hour'],

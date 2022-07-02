@@ -3,9 +3,9 @@ from urllib import response
 from fastapi import status, HTTPException
 import strawberry
 from models import Twitter
+from twitter import TwitterAnalytics, TwitterOverview, Response
 from tortoise.functions import Avg, Count, Sum
 from dacite import from_dict
-from .twitter import TwitterAnalytics, TwitterOverview,Response
 
 class AttrDict(dict):
     def __init__(self, *args, **kwargs):

@@ -4,7 +4,7 @@ from typing import List
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from strawberry.asgi import GraphQL
-from twitter_code.query import schema
+from query import schema
 
 
 app = FastAPI()

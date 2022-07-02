@@ -13,20 +13,6 @@ class TwitterOverview:
     retweetTotal: int 
     sentimentTotal: float 
 
-@strawberry.type
-class TwitterWeekdayAnalytics:
-    asaID_w: Union[str, None]
-    likesCount_w: Union[List[JSON], None]
-    retweetsCount_w: Union[List[JSON], None]
-    sentimentScore_w: Union[List[JSON], None]
-
-@strawberry.type
-class TwitterHourAnalytics:
-    asaID_h: Union[str, None]
-    likesCount_h: Union[List[JSON], None]
-    retweetsCount_h: Union[List[JSON], None]
-    sentimentScore_h: Union[List[JSON], None]
-
 
 
 @strawberry.type
@@ -40,6 +26,6 @@ class TwitterAnalytics:
     sentiment: float
 
 @strawberry.type
-class response:
+class Response:
     asaID: Union[str, None]
     results: List[TwitterAnalytics]

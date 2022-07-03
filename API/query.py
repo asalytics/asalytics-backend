@@ -16,6 +16,9 @@ class AttrDict(dict):
 
 @strawberry.type
 class Query:
+    """
+    Query for Twitter
+    """
     @strawberry.field 
     async def twitterOverview(self, asaID:str) -> TwitterOverview:
 

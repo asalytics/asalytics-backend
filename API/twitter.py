@@ -19,7 +19,7 @@ class TwitterOverview:
 class TwitterAnalytics:
     # asaID: Union[str, None]
     posted_at: Union[datetime, None]
-    dow: Union[int, None]
+    day_of_week: Union[int, None]
     hour: Union[int, None]
     likes: int
     retweets: int

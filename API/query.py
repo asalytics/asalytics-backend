@@ -41,8 +41,8 @@ class Query:
 
     @strawberry.field
     async def twitterAnalytics(self, asaID:str, 
-                                startDate:str = '2021-03-01', #to be modified to datetime.now
-                                endDate:str = '2021-03-21',  #to be modified to timedelta
+                                startDate:str = '2022-06-25', #to be modified to datetime.now
+                                endDate:str = '2022-07-02',  #to be modified to timedelta
                                 weekday: bool=False, 
                                 hour: bool=False) -> Response:
 
@@ -70,8 +70,8 @@ class Query:
                 filter(posted_at__range = [startDate, endDate]).\
                 annotate(likes = Sum("likes"), retweets = Sum('retweets'),
                 sentiment = Sum("sentiment_score")).\
-                group_by("dow").\
-                values("dow", "likes", "retweets", "sentiment")
+                group_by("day_of_week").\
+                values("day_of_week", "likes", "retweets", "sentiment")
 
             
 
@@ -95,7 +95,7 @@ class Query:
 
         result = [from_dict(data_class=TwitterAnalytics, data=x) for x in result]
         
-        return response(
+        return Response(
                 asaID = asaID,
                 results = result
             

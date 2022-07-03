@@ -6,14 +6,16 @@ class Twitter(Model):
     tweet_id = fields.BigIntField(pk=True)
     tweet = fields.TextField()
     posted_at = fields.DatetimeField(auto_now_add=False)
+    day_of_week = fields.IntField()
+    day = fields.IntField()
+    month = fields.IntField()
+    year = fields.IntField()
+    hour = fields.IntField()
+    mins = fields.IntField()
     likes = fields.IntField()
     retweets = fields.IntField()
     sentiment_score = fields.FloatField()
     asa_id = fields.TextField()
-    dow = fields.IntField()
-    hour = fields.IntField()
-    month = fields.IntField()
-
     class Meta:
         table = "twitterTable"
 

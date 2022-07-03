@@ -15,7 +15,7 @@ app.add_route("/analytics", graphql_app)
 app.add_websocket_route("/analytics", graphql_app)
 
 
-DATABASE_URL = "postgres://ernestowojori:password@127.0.0.1:5432/test_db"
+DATABASE_URL = "postgres://ernestowojori:password@127.0.0.1:5432/asalytics_db"
 
 
 register_tortoise(

@@ -1,0 +1,5 @@
+dacite==1.6.0
+fastapi==0.79.0
+pytest==7.1.2
+strawberry==3.0
+tortoise==0.1.1
